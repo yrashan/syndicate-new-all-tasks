@@ -18,7 +18,11 @@ class HelloWorld(AbstractLambda):
             "statusCode": 200,
             "message": "Hello from Lambda"
         }
-    
+
+    def handle_request(self, event, context):
+        response = self.lambda_handler(event, context)
+        return response["statusCode"]
+
 
 HANDLER = HelloWorld()
 
