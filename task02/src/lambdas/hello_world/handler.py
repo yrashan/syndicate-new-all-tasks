@@ -21,7 +21,7 @@ class HelloWorld(AbstractLambda):
         else:
             return {
                 "statusCode": 400,
-                "body": f'{{statusCode": 400, "message": "Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"}}'
+                "body": f'{{"statusCode": 400, "message": "Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"}}'
             }
 
     def handle_request(self, event, context):
