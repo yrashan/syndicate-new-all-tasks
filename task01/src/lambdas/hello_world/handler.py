@@ -9,7 +9,7 @@ class HelloWorld(AbstractLambda):
     def validate_request(self, event) -> dict:
         pass
         
-    def handle_request(self, event, context):
+    def lambda_handler(self, event, context):
         """
         Explain incoming event here
         """
