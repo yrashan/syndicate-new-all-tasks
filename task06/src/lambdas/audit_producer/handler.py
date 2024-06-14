@@ -15,7 +15,7 @@ audit_table = dynamodb.Table(table_name)
 
 def process_insert(new_image):
     item_key = new_image['key']['S']
-    new_value = {k: v['S'] if 'S' in v else v['N'] for k, v in new_image.items()}
+    new_value = {k: v['S'] if 'S' in v else int(v['N']) for k, v in new_image.items()}
     audit_item = {
         'id': str(uuid.uuid4()),
         'itemKey': item_key,
