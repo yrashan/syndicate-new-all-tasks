@@ -28,8 +28,8 @@ def process_insert(new_image):
 def process_modify(old_image, new_image):
     item_key = new_image['key']['S']
     for attribute in old_image:
-        old_value = old_image[attribute]['S'] if 'S' in old_image[attribute] else old_image[attribute]['N']
-        new_value = new_image[attribute]['S'] if 'S' in new_image[attribute] else new_image[attribute]['N']
+        old_value = old_image[attribute]['S'] if 'S' in old_image[attribute] else int(old_image[attribute]['N'])
+        new_value = new_image[attribute]['S'] if 'S' in new_image[attribute] else int(new_image[attribute]['N'])
         if old_value != new_value:
             audit_item = {
                 'id': str(uuid.uuid4()),
