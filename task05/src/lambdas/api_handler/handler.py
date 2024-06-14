@@ -3,6 +3,8 @@ from commons.abstract_lambda import AbstractLambda
 import json
 import uuid
 from datetime import datetime
+import boto3
+import os
 
 _LOG = get_logger('ApiHandler-handler')
 
@@ -27,16 +29,30 @@ class ApiHandler(AbstractLambda):
         created_at = datetime.utcnow().isoformat()
 
         # Create the response
-        response = {
+        response_event = {
             "id": generated_id,
             "principalId": principal_id,
             "createdAt": created_at,
             "body": content
         }
 
+        # Dynamo DB
+        region = os.environ.get('region','eu-central-1')
+        table_name = os.environ.get('target_table', 'Events')
+
+        print("region:::::"+region)
+        print("table_name:::::" + table_name)
+
+        dynamodb = boto3.resource('dynamodb', region_name=region)
+        table = dynamodb.Table(table_name)
+        response = table.put_item(Item=response_event)
+
         return {
             'statusCode': 201,
-            'body': json.dumps(response),
+            'body': json.dumps({
+                'statusCode': 201,
+                'event': response_event
+            }),
             'headers': {
                 'Content-Type': 'application/json'
             }

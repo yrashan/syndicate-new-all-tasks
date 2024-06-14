@@ -10,7 +10,10 @@
   "lambda_path": "lambdas\\api_handler",
   "dependencies": [],
   "event_sources": [],
-  "env_variables": {},
+  "env_variables": {
+    "region": "${region}",
+    "target_table": "${target_dynamodb_table}"
+  },
   "publish_version": false,
   "alias": "",
   "url_config": {},
