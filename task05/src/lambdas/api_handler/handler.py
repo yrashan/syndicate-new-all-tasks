@@ -42,11 +42,11 @@ class ApiHandler(AbstractLambda):
 
         dynamodb = boto3.resource('dynamodb', region_name=region)
         table = dynamodb.Table(table_name)
-        response = table.put_item(Item=response_event)
+        db_response = table.put_item(Item=response_event)
 
         return {
             'statusCode': 201,
-            'event': json.dumps(response_event)
+            'event': response_event
         }
     
     def handle_request(self, event, context):
