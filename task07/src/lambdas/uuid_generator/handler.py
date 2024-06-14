@@ -18,8 +18,9 @@ class UuidGenerator(AbstractLambda):
         # Generate 10 random UUIDs
         ids = [str(uuid.uuid4()) for _ in range(10)]
 
-        # Get the current time in ISO format
-        execution_start_time = datetime.utcnow().isoformat() + 'Z'
+        # Get the current time in ISO format and truncate milliseconds
+        now = datetime.utcnow()
+        execution_start_time = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
         # Create the content for the file
         content = {
