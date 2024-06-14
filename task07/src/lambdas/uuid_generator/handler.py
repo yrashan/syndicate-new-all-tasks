@@ -32,7 +32,7 @@ class UuidGenerator(AbstractLambda):
 
         # Define the S3 bucket and file name
         bucket_name = os.environ.get('target_bucket', 'uuid-storage')
-        file_name = f"{execution_start_time}.json"
+        file_name = f"{execution_start_time}"
 
         # Initialize boto3 S3 client
         s3_client = boto3.client('s3')
