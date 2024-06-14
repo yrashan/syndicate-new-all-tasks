@@ -15,12 +15,9 @@ class ApiHandler(AbstractLambda):
         pass
         
     def lambda_handler(self, event, context):
-        # Parse the body of the request
-        body = json.loads(event['body'])
-
         # Extract the principalId and content from the request
-        principal_id = body['principalId']
-        content = body['content']
+        principal_id = event['principalId']
+        content = event['content']
 
         # Generate UUID v4
         generated_id = str(uuid.uuid4())
@@ -49,13 +46,7 @@ class ApiHandler(AbstractLambda):
 
         return {
             'statusCode': 201,
-            'body': json.dumps({
-                'statusCode': 201,
-                'event': response_event
-            }),
-            'headers': {
-                'Content-Type': 'application/json'
-            }
+            'event': json.dumps(response_event)
         }
     
     def handle_request(self, event, context):

@@ -12,7 +12,7 @@
   "event_sources": [],
   "env_variables": {
     "region": "${region}",
-    "target_table": "${target_dynamodb_table}"
+    "target_table": "${target_table}"
   },
   "publish_version": false,
   "alias": "",
