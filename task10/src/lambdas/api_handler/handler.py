@@ -7,6 +7,7 @@ import uuid
 import os
 import decimal
 import typing as t
+#import datetime
 from datetime import datetime
 from boto3.dynamodb.conditions import Key
 
@@ -107,6 +108,24 @@ class ApiHandler(AbstractLambda):
             return int(data)
 
         return data
+
+    def is_overlapping(
+            self,
+            start1: str,
+            end1: str,
+            start2: str,
+            end2: str,
+    ) -> bool:
+
+        start1 = datetime.strptime(start1, "%H:%M").time()
+        end1 = datetime.strptime(end1, "%H:%M").time()
+        start2 = datetime.strptime(start2, "%H:%M").time()
+        end2 = datetime.strptime(end2, "%H:%M").time()
+
+        if start1 <= start2 <= end1 or start1 <= end2 <= end1:
+            return True
+
+        return False
 
     def signup(self, event):
         # Logging the event body
@@ -220,15 +239,40 @@ class ApiHandler(AbstractLambda):
 
     def create_reservation(self, event):
         body = json.loads(event.get('body'))
+        table_number = int(body['tableNumber'])
+        slot_date = body['date']
+        slot_time_start = body['slotTimeStart']
+        slot_time_end = body['slotTimeEnd']
+
+        # Check if the table number exists
+        response = tables_table.scan()
+        tables = response["Items"]
+        for table in tables:
+            if table["number"] == table_number:
+                break
+        else:
+            raise ValueError(f"Table {table_number} not found")
+
+        # Check if there is any overlap
+        response = reservations_table.scan()
+        reservations = response["Items"]
+        reservations = self.serialize(reservations)
+        for reservation in reservations:
+            if reservation["tableNumber"] == table_number and reservation["date"] == slot_date:
+                reservation_start = reservation["slotTimeStart"]
+                reservation_end = reservation["slotTimeEnd"]
+                if self.is_overlapping(reservation_start, reservation_end, slot_time_start, slot_time_end):
+                    raise ValueError("Reservation time is overlapping with another reservation")
+
         reservation_id = str(uuid.uuid4())
         item = {
             'id': reservation_id,
-            'tableNumber': int(body['tableNumber']),
+            'tableNumber': table_number,
             'clientName': body['clientName'],
             'phoneNumber': body['phoneNumber'],
-            'date': body['date'],
-            'slotTimeStart': body['slotTimeStart'],
-            'slotTimeEnd': body['slotTimeEnd']
+            'date': slot_date,
+            'slotTimeStart': slot_time_start,
+            'slotTimeEnd': slot_time_end
         }
         reservations_table.put_item(Item=item)
         return {'statusCode': 200, 'body': json.dumps({'reservationId': reservation_id})}
